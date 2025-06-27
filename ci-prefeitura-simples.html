@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI Prefeitura - Sistema de Chamados Internos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos para impressão otimizados */
+        @media print {
+            @page {
+                margin: 0.4in;
+                size: A4;
+            }
+            
+            body {
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+                font-size: 10px;
+                line-height: 1.2;
+            }
+            
+            .print\:hidden {
+                display: none !important;
+            }
+
+            .print\:block {
+                display: block !important;
+            }
+
+            .print\:fixed {
+                position: fixed !important;
+            }
+
+            .print\:bottom-4 {
+                bottom: 1rem !important;
+            }
+
+            .print\:left-0 {
+                left: 0 !important;
+            }
+
+            .print\:right-0 {
+                right: 0 !important;
+            }
+            
+            .print\:bg-white {
+                background: white !important;
+            }
+            
+            .print\:shadow-none {
+                box-shadow: none !important;
+            }
+            
+            .print\:border-0 {
+                border: none !important;
+            }
+            
+            .print\:p-3 {
+                padding: 0.75rem !important;
+            }
+            
+            .print\:p-2 {
+                padding: 0.5rem !important;
+            }
+
+            .print\:pb-20 {
+                padding-bottom: 5rem !important;
+            }
+            
+            .print\:mb-2 {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .print\:space-y-2 > * + * {
+                margin-top: 0.5rem !important;
+            }
+            
+            .print\:gap-2 {
+                gap: 0.5rem !important;
+            }
+            
+            .print\:gap-4 {
+                gap: 1rem !important;
+            }
+            
+            .print\:h-6 {
+                height: 1.5rem !important;
+            }
+            
+            .print\:w-\[60px\] {
+                width: 60px !important;
+            }
+            
+            .print\:h-\[60px\] {
+                height: 60px !important;
+            }
+            
+            .print\:text-base {
+                font-size: 0.875rem !important;
+            }
+        }
+
+        /* Auto-resize textarea */
+        .textarea-auto-resize {
+            resize: none;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 print:bg-white relative">
+    <!-- Header simples -->
+    <div class="print:hidden bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <div>
+                    <h1 class="text-base font-semibold text-gray-800">Sistema de Chamados Internos</h1>
+                    <p class="text-xs text-gray-500">Prefeitura de São Francisco do Conde</p>
+                </div>
+            </div>
+            <button onclick="window.print()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm">
+                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                Imprimir
+            </button>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto p-4 print:p-3 print:pb-20">
+        <!-- Cabeçalho do documento - mais compacto -->
+        <div class="mb-4 print:mb-2 print:shadow-none print:border-0 border-0">
+            <div class="bg-white rounded-lg shadow-sm p-4 print:p-2">
+                <div class="flex items-center gap-4">
+                    <div class="w-[70px] h-[70px] print:w-[60px] print:h-[60px] flex-shrink-0">
+                        <svg viewBox="0 0 100 100" class="w-full h-full">
+                            <!-- Brasão simplificado em SVG -->
+                            <circle cx="50" cy="50" r="45" fill="#1e40af" stroke="#1e3a8a" stroke-width="2"/>
+                            <circle cx="50" cy="35" r="15" fill="#fbbf24"/>
+                            <rect x="35" y="50" width="30" height="20" fill="#10b981"/>
+                            <rect x="40" y="55" width="20" height="2" fill="#ffffff"/>
+                            <rect x="40" y="60" width="20" height="2" fill="#ffffff"/>
+                            <rect x="40" y="65" width="20" height="2" fill="#ffffff"/>
+                            <text x="50" y="85" text-anchor="middle" fill="#ffffff" font-size="8" font-weight="bold">SFC</text>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h1 class="text-lg print:text-base font-bold text-gray-800 leading-tight">
+                            PREFEITURA MUNICIPAL DE SÃO FRANCISCO DO CONDE
+                        </h1>
+                        <div class="h-0.5 bg-blue-600 w-full mt-1 mb-2"></div>
+                        <p id="secretariaRemetente" class="text-xs text-blue-600 font-medium"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Título do documento - mais compacto -->
+        <div class="text-center mb-4 print:mb-2">
+            <h2 class="text-lg print:text-base font-bold text-gray-800">CHAMADO INTERNO</h2>
+        </div>
+
+        <!-- Formulário - layout mais compacto -->
+        <div class="print:shadow-none print:border-0 border-0">
+            <div class="bg-white rounded-lg shadow-sm p-4 print:p-2">
+                <div class="space-y-4 print:space-y-2">
+                    <!-- Linha 1: Número, Data e ATT em uma linha -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 print:gap-2">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">Nº Ordem</label>
+                            <div class="flex items-center gap-1">
+                                <input
+                                    type="text"
+                                    id="numeroOrdem"
+                                    placeholder="000"
+                                    class="w-16 text-center text-sm font-semibold border-0 bg-gray-100 rounded px-2 py-1.5 h-8"
+                                    oninput="autoSave()"
+                                />
+                                <span class="text-sm font-bold text-gray-400">/</span>
+                                <input
+                                    type="text"
+                                    id="anoVigencia"
+                                    class="w-16 text-center text-sm font-semibold border-0 bg-gray-100 rounded px-2 py-1.5 h-8"
+                                    oninput="autoSave()"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">Data</label>
+                            <div class="px-2 py-1.5 bg-gray-100 rounded text-sm h-8 flex items-center">
+                                <span id="dataAtual" class="font-medium text-gray-800"></span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">Atenção de</label>
+                            <input
+                                type="text"
+                                id="att"
+                                placeholder="Nome do responsável"
+                                class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
+                                oninput="autoSave()"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Linha 2: DE e PARA -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 print:gap-2">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">DE (Remetente)</label>
+                            <select id="de" class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8" onchange="atualizarSecretariaRemetente(); autoSave()">
+                                <option value="">Selecione a secretaria</option>
+                                <option value="Gabinete do Prefeito (GAPRE)">Gabinete do Prefeito (GAPRE)</option>
+                                <option value="Gabinete do Vice-Prefeito (GAVIPRE)">Gabinete do Vice-Prefeito (GAVIPRE)</option>
+                                <option value="Secretaria de Governo (SEGOV)">Secretaria de Governo (SEGOV)</option>
+                                <option value="Secretaria de Administração (SEAD)">Secretaria de Administração (SEAD)</option>
+                                <option value="Secretaria de Desenvolvimento Social (SEDES)">Secretaria de Desenvolvimento Social (SEDES)</option>
+                                <option value="Secretaria da Educação (SEDUC)">Secretaria da Educação (SEDUC)</option>
+                                <option value="Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)">Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)</option>
+                                <option value="Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)">Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)</option>
+                                <option value="Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)">Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)</option>
+                                <option value="Secretaria de Agricultura e Pesca (SEAP)">Secretaria de Agricultura e Pesca (SEAP)</option>
+                                <option value="Secretaria da Saúde (SESAU)">Secretaria da Saúde (SESAU)</option>
+                                <option value="Secretaria da Fazenda e Orçamento (SEFAZ)">Secretaria da Fazenda e Orçamento (SEFAZ)</option>
+                                <option value="Secretaria de Cultura (SECULT)">Secretaria de Cultura (SECULT)</option>
+                                <option value="Secretaria de Comunicação (SECOM)">Secretaria de Comunicação (SECOM)</option>
+                                <option value="Secretaria de Direitos Humanos, Cidadania e Juventude">Secretaria de Direitos Humanos, Cidadania e Juventude</option>
+                                <option value="Secretaria de Projetos Estratégicos">Secretaria de Projetos Estratégicos</option>
+                                <option value="Secretaria de Turismo">Secretaria de Turismo</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">PARA (Destinatário)</label>
+                            <select id="para" class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8" onchange="autoSave()">
+                                <option value="">Selecione a secretaria</option>
+                                <option value="Gabinete do Prefeito (GAPRE)">Gabinete do Prefeito (GAPRE)</option>
+                                <option value="Gabinete do Vice-Prefeito (GAVIPRE)">Gabinete do Vice-Prefeito (GAVIPRE)</option>
+                                <option value="Secretaria de Governo (SEGOV)">Secretaria de Governo (SEGOV)</option>
+                                <option value="Secretaria de Administração (SEAD)">Secretaria de Administração (SEAD)</option>
+                                <option value="Secretaria de Desenvolvimento Social (SEDES)">Secretaria de Desenvolvimento Social (SEDES)</option>
+                                <option value="Secretaria da Educação (SEDUC)">Secretaria da Educação (SEDUC)</option>
+                                <option value="Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)">Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)</option>
+                                <option value="Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)">Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)</option>
+                                <option value="Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)">Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)</option>
+                                <option value="Secretaria de Agricultura e Pesca (SEAP)">Secretaria de Agricultura e Pesca (SEAP)</option>
+                                <option value="Secretaria da Saúde (SESAU)">Secretaria da Saúde (SESAU)</option>
+                                <option value="Secretaria da Fazenda e Orçamento (SEFAZ)">Secretaria da Fazenda e Orçamento (SEFAZ)</option>
+                                <option value="Secretaria de Cultura (SECULT)">Secretaria de Cultura (SECULT)</option>
+                                <option value="Secretaria de Comunicação (SECOM)">Secretaria de Comunicação (SECOM)</option>
+                                <option value="Secretaria de Direitos Humanos, Cidadania e Juventude">Secretaria de Direitos Humanos, Cidadania e Juventude</option>
+                                <option value="Secretaria de Projetos Estratégicos">Secretaria de Projetos Estratégicos</option>
+                                <option value="Secretaria de Turismo">Secretaria de Turismo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Linha 3: Assunto -->
+                    <div class="space-y-1">
+                        <label class="text-xs font-medium text-gray-700">Assunto</label>
+                        <input
+                            type="text"
+                            id="assunto"
+                            placeholder="Descreva o assunto"
+                            class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
+                            oninput="autoSave()"
+                        />
+                    </div>
+
+                    <!-- Descrição - mais compacta -->
+                    <div class="space-y-1">
+                        <label class="text-xs font-medium text-gray-700">Descrição do Problema</label>
+                        <textarea
+                            id="descricao"
+                            placeholder="Descreva detalhadamente o problema ou solicitação..."
+                            class="w-full border-0 bg-gray-100 rounded px-2 py-1.5 text-sm textarea-auto-resize"
+                            style="min-height: 80px; height: auto;"
+                            oninput="autoResize(this); autoSave()"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de Assinaturas - Apenas para visualização na tela -->
+        <div class="mt-8 print:hidden">
+            <div class="grid grid-cols-2 gap-6">
+                <!-- Assinatura do Remetente -->
+                <div class="text-center">
+                    <div class="border-b-2 border-gray-400 mb-2 h-8"></div>
+                    <p class="font-medium text-gray-700 text-xs">Assinatura do Remetente</p>
+                </div>
+
+                <!-- Assinatura do Destinatário -->
+                <div class="text-center">
+                    <div class="border-b-2 border-gray-400 mb-2 h-8"></div>
+                    <p class="font-medium text-gray-700 text-xs mb-2">Assinatura do Destinatário</p>
+                    <div class="flex items-center justify-center gap-3 text-xs">
+                        <div class="flex items-center gap-1">
+                            <span>Data:</span>
+                            <div class="border-b border-gray-400 w-14 h-3"></div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span>Hora:</span>
+                            <div class="border-b border-gray-400 w-10 h-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Área de Assinaturas para Impressão - Posição Fixa no Final -->
+    <div class="print:block hidden print:fixed print:bottom-4 print:left-0 print:right-0">
+        <div class="max-w-4xl mx-auto px-3">
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Assinatura do Remetente -->
+                <div class="text-center">
+                    <div class="border-b-2 border-gray-400 mb-2 h-6"></div>
+                    <p class="font-medium text-gray-700 text-xs">Assinatura do Remetente</p>
+                </div>
+
+                <!-- Assinatura do Destinatário -->
+                <div class="text-center">
+                    <div class="border-b-2 border-gray-400 mb-2 h-6"></div>
+                    <p class="font-medium text-gray-700 text-xs mb-2">Assinatura do Destinatário</p>
+                    <div class="flex items-center justify-center gap-3 text-xs">
+                        <div class="flex items-center gap-1">
+                            <span>Data:</span>
+                            <div class="border-b border-gray-400 w-14 h-3"></div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span>Hora:</span>
+                            <div class="border-b border-gray-400 w-10 h-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let autoSaveTimeout;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Definir data atual
+            document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
+            
+            // Definir ano atual
+            document.getElementById('anoVigencia').value = new Date().getFullYear();
+            
+            // Carregar dados salvos
+            carregarDados();
+            
+            // Configurar auto-resize para textarea
+            autoResize(document.getElementById('descricao'));
+        });
+
+        // Função para auto-resize da textarea
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.max(80, textarea.scrollHeight) + 'px';
+        }
+
+        // Função para atualizar secretaria remetente no cabeçalho
+        function atualizarSecretariaRemetente() {
+            const de = document.getElementById('de').value;
+            document.getElementById('secretariaRemetente').textContent = de;
+        }
+
+        // Função para auto-save
+        function autoSave() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                salvarDados();
+            }, 1000);
+        }
+
+        // Função para salvar dados no localStorage
+        function salvarDados() {
+            const dados = {
+                numeroOrdem: document.getElementById('numeroOrdem').value,
+                anoVigencia: document.getElementById('anoVigencia').value,
+                att: document.getElementById('att').value,
+                de: document.getElementById('de').value,
+                para: document.getElementById('para').value,
+                assunto: document.getElementById('assunto').value,
+                descricao: document.getElementById('descricao').value
+            };
+            
+            localStorage.setItem('chamadoAtual', JSON.stringify(dados));
+        }
+
+        // Função para carregar dados do localStorage
+        function carregarDados() {
+            const dados = localStorage.getItem('chamadoAtual');
+            if (dados) {
+                const obj = JSON.parse(dados);
+                document.getElementById('numeroOrdem').value = obj.numeroOrdem || '';
+                document.getElementById('anoVigencia').value = obj.anoVigencia || new Date().getFullYear();
+                document.getElementById('att').value = obj.att || '';
+                document.getElementById('de').value = obj.de || '';
+                document.getElementById('para').value = obj.para || '';
+                document.getElementById('assunto').value = obj.assunto || '';
+                document.getElementById('descricao').value = obj.descricao || '';
+                
+                // Atualizar secretaria remetente
+                atualizarSecretariaRemetente();
+                
+                // Auto resize textarea
+                autoResize(document.getElementById('descricao'));
+            }
+        }
+    </script>
+</body>
+</html>
