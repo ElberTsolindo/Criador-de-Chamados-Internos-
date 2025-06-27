@@ -1,59 +1,46 @@
-# Criador de Chamados Internos - Prefeitura de São Francisco do Conde
+# CI Prefeitura - Sistema de Chamados Internos
 
-Sistema web para criação e gerenciamento de chamados internos da Prefeitura Municipal de São Francisco do Conde.
+Sistema de chamados internos para a Prefeitura Municipal de São Francisco do Conde.
 
-## 🌐 Acesso Online
+## 🚀 Deploy Automático
 
-**URL:** [https://criador-chamados-sfc.com](https://criador-chamados-sfc.com)
+Este projeto está configurado para deploy automático no GitHub Pages usando GitHub Actions.
 
-## ✨ Funcionalidades
+### URL do Sistema
+Após o deploy, o sistema estará disponível em:
+`https://[SEU-USUARIO].github.io/ci-prefeitura/`
 
-- ✅ Criador de chamados internos
-- ✅ Seleção de secretarias
-- ✅ Numeração automática
-- ✅ Impressão otimizada para A4
-- ✅ Design responsivo
-- ✅ Interface limpa e profissional
-
-## 🖨️ Impressão
-
-O sistema foi otimizado para impressão em papel A4, garantindo que todo o conteúdo caiba em uma única página.
-
-## 🏛️ Secretarias Disponíveis
-
-- Gabinete do Prefeito (GAPRE)
-- Gabinete do Vice-Prefeito (GAVIPRE)
-- Secretaria de Governo (SEGOV)
-- Secretaria de Administração (SEAD)
-- Secretaria de Desenvolvimento Social (SEDES)
-- Secretaria da Educação (SEDUC)
-- Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)
-- Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)
-- Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)
-- Secretaria de Agricultura e Pesca (SEAP)
-- Secretaria da Saúde (SESAU)
-- Secretaria da Fazenda e Orçamento (SEFAZ)
-- Secretaria de Cultura (SECULT)
-- Secretaria de Comunicação (SECOM)
-- Secretaria de Direitos Humanos, Cidadania e Juventude
-- Secretaria de Projetos Estratégicos
-- Secretaria de Turismo
-
-## 🚀 Tecnologias
+## 🛠️ Tecnologias
 
 - Next.js 14
 - React 18
-- Tailwind CSS
 - TypeScript
-- Shadcn/ui
+- Tailwind CSS
+- shadcn/ui
+- GitHub Pages
+- GitHub Actions
 
-## 📱 Compatibilidade
+## 📋 Funcionalidades
 
-- ✅ Desktop (Windows, Mac, Linux)
-- ✅ Tablet
-- ✅ Mobile
-- ✅ Todos os navegadores modernos
+- ✅ Formulário de chamados internos
+- ✅ Seleção de secretarias
+- ✅ Impressão otimizada
+- ✅ Layout responsivo
+- ✅ Deploy automático
 
----
+## 🔧 Desenvolvimento Local
 
-**Desenvolvido para a Prefeitura Municipal de São Francisco do Conde**
+\`\`\`bash
+# Instalar dependências
+npm install
+
+# Executar em modo desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+\`\`\`
+
+## 📄 Licença
+
+Este projeto é de uso interno da Prefeitura Municipal de São Francisco do Conde.

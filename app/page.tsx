@@ -72,6 +72,7 @@ export default function ChamadosInternos() {
                 src="https://saofranciscodoconde.ba.gov.br/wp-content/uploads/2021/02/brasao-300x300.jpg"
                 alt="Brasão da Prefeitura"
                 className="w-[70px] h-[70px] print:w-[60px] print:h-[60px] object-contain"
+                crossOrigin="anonymous"
               />
               <div className="flex-1">
                 <h1 className="text-lg print:text-base font-bold text-gray-800 leading-tight">
