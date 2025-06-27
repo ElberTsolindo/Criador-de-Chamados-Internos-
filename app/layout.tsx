@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Chamados Internos",
   },
-  generator: "v0.dev",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -29,28 +29,10 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#2563eb" />
-        <meta name="background-color" content="#ffffff" />
-
-        {/* Apple PWA */}
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Chamados Internos" />
-
-        {/* Microsoft PWA */}
-        <meta name="msapplication-TileImage" content="/icon-192x192.png" />
-        <meta name="msapplication-TileColor" content="#2563eb" />
-        <meta name="msapplication-config" content="/browserconfig.xml" />
-
-        {/* PWA Meta Tags */}
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="application-name" content="Chamados Internos" />
-
-        {/* Viewport otimizado para PWA */}
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
-        />
       </head>
       <body className={inter.className}>{children}</body>
     </html>

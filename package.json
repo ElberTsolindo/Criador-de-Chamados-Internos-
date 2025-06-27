@@ -1,16 +1,10 @@
 {
-  "name": "chamados-internos-desktop",
-  "version": "1.0.0",
+  "name": "my-v0-project",
+  "version": "0.1.0",
   "private": true,
-  "main": "main.js",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "dist": "npm run build && npm run export && electron-builder",
-    "electron": "electron .",
-    "electron-dev": "NODE_ENV=development electron .",
-    "electron-pack": "next build && next export && electron-builder",
-    "export": "next export",
     "lint": "next lint",
     "start": "next start"
   },
@@ -53,7 +47,6 @@
     "lucide-react": "^0.454.0",
     "next": "15.2.4",
     "next-themes": "latest",
-    "path": "latest",
     "react": "^19",
     "react-day-picker": "latest",
     "react-dom": "^19",
@@ -70,39 +63,8 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "electron": "^latest",
-    "electron-builder": "^latest",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
-  },
-  "build": {
-    "appId": "com.prefeitura.saofrancisco.chamados",
-    "productName": "Chamados Internos",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "out/**/*",
-      "main.js",
-      "package.json",
-      "public/icon-*.png"
-    ],
-    "win": {
-      "target": "nsis",
-      "icon": "public/icon-512x512.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
-    },
-    "mac": {
-      "icon": "public/icon-512x512.png"
-    },
-    "linux": {
-      "icon": "public/icon-512x512.png"
-    }
   }
 }
