@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI Prefeitura - Sistema de Chamados Internos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados */
+        .textarea-auto-resize {
+            resize: none;
+            overflow: hidden;
+        }
+        
+        /* Estilos para impressão */
+        @media print {
+            @page {
+                margin: 0.4in;
+                size: A4;
+            }
+            
+            body {
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+                font-size: 10px;
+                line-height: 1.2;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .print-only {
+                display: block !important;
+            }
+            
+            .print-signatures {
+                position: fixed;
+                bottom: 1rem;
+                left: 0;
+                right: 0;
+            }
+            
+            .print-content {
+                padding-bottom: 5rem;
+            }
+            
+            .print-compact {
+                padding: 0.5rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .print-text-sm {
+                font-size: 0.875rem !important;
+            }
+            
+            .print-logo {
+                width: 60px !important;
+                height: 60px !important;
+            }
+        }
+        
+        /* Animações */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Validação */
+        .campo-erro {
+            border: 2px solid #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+        
+        .campo-sucesso {
+            border: 2px solid #10b981 !important;
+            background-color: #f0fdf4 !important;
+        }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast-success {
+            background-color: #10b981;
+        }
+        
+        .toast-error {
+            background-color: #ef4444;
+        }
+        
+        .toast-info {
+            background-color: #3b82f6;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="no-print bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-file-alt text-blue-600 text-xl"></i>
+                <div>
+                    <h1 class="text-base font-semibold text-gray-800">Sistema de Chamados Internos</h1>
+                    <p class="text-xs text-gray-500">Prefeitura de São Francisco do Conde</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="gerarProximoNumero()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1">
+                    <i class="fas fa-plus"></i>
+                    Novo
+                </button>
+                <button onclick="salvarChamado()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1">
+                    <i class="fas fa-save"></i>
+                    Salvar
+                </button>
+                <button onclick="abrirHistorico()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1">
+                    <i class="fas fa-history"></i>
+                    Histórico
+                </button>
+                <button onclick="window.print()" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1">
+                    <i class="fas fa-print"></i>
+                    Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto p-4 print-content">
+        <!-- Cabeçalho do documento -->
+        <div class="bg-white rounded-lg shadow-sm mb-4 print:shadow-none print-compact">
+            <div class="p-4 print-compact">
+                <div class="flex items-center gap-4">
+                    <img src="https://saofranciscodoconde.ba.gov.br/wp-content/uploads/2021/02/brasao-300x300.jpg" 
+                         alt="Brasão da Prefeitura" 
+                         class="w-[70px] h-[70px] print-logo object-contain"
+                         crossorigin="anonymous">
+                    <div class="flex-1">
+                        <h1 class="text-lg print-text-sm font-bold text-gray-800 leading-tight">
+                            PREFEITURA MUNICIPAL DE SÃO FRANCISCO DO CONDE
+                        </h1>
+                        <div class="h-0.5 bg-blue-600 w-full mt-1 mb-2"></div>
+                        <p id="secretariaRemetente" class="text-xs text-blue-600 font-medium"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Título do documento -->
+        <div class="text-center mb-4 print-compact">
+            <h2 class="text-lg print-text-sm font-bold text-gray-800">CHAMADO INTERNO</h2>
+        </div>
+
+        <!-- Formulário -->
+        <div class="bg-white rounded-lg shadow-sm print:shadow-none">
+            <div class="p-4 print-compact">
+                <div class="space-y-4 print:space-y-2">
+                    <!-- Linha 1: Número, Data e ATT -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 print:gap-2">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">Nº Ordem *</label>
+                            <div class="flex items-center gap-1">
+                                <input type="text" 
+                                       id="numeroOrdem" 
+                                       placeholder="000" 
+                                       maxlength="3"
+                                       class="w-16 text-center text-sm font-semibold border-0 bg-gray-100 rounded px-2 py-1.5 h-8"
+                                       oninput="validarCampo(this); autoSave()">
+                                <span class="text-sm font-bold text-gray-400">/</span>
+                                <input type="text" 
+                                       id="anoVigencia" 
+                                       maxlength="4"
+                                       class="w-16 text-center text-sm font-semibold border-0 bg-gray-100 rounded px-2 py-1.5 h-8"
+                                       oninput="validarCampo(this); autoSave()">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">Data</label>
+                            <div class="px-2 py-1.5 bg-gray-100 rounded text-sm h-8 flex items-center">
+                                <span id="dataAtual" class="font-medium text-gray-800"></span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">Atenção de *</label>
+                            <input type="text" 
+                                   id="att" 
+                                   placeholder="Nome do responsável"
+                                   class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
+                                   oninput="validarCampo(this); autoSave()">
+                        </div>
+                    </div>
+
+                    <!-- Linha 2: DE e PARA -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 print:gap-2">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">DE (Remetente) *</label>
+                            <select id="de" 
+                                    class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
+                                    onchange="validarCampo(this); atualizarSecretariaRemetente(); autoSave()">
+                                <option value="">Selecione a secretaria</option>
+                                <option value="Gabinete do Prefeito (GAPRE)">Gabinete do Prefeito (GAPRE)</option>
+                                <option value="Gabinete do Vice-Prefeito (GAVIPRE)">Gabinete do Vice-Prefeito (GAVIPRE)</option>
+                                <option value="Secretaria de Governo (SEGOV)">Secretaria de Governo (SEGOV)</option>
+                                <option value="Secretaria de Administração (SEAD)">Secretaria de Administração (SEAD)</option>
+                                <option value="Secretaria de Desenvolvimento Social (SEDES)">Secretaria de Desenvolvimento Social (SEDES)</option>
+                                <option value="Secretaria da Educação (SEDUC)">Secretaria da Educação (SEDUC)</option>
+                                <option value="Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)">Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)</option>
+                                <option value="Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)">Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)</option>
+                                <option value="Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)">Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)</option>
+                                <option value="Secretaria de Agricultura e Pesca (SEAP)">Secretaria de Agricultura e Pesca (SEAP)</option>
+                                <option value="Secretaria da Saúde (SESAU)">Secretaria da Saúde (SESAU)</option>
+                                <option value="Secretaria da Fazenda e Orçamento (SEFAZ)">Secretaria da Fazenda e Orçamento (SEFAZ)</option>
+                                <option value="Secretaria de Cultura (SECULT)">Secretaria de Cultura (SECULT)</option>
+                                <option value="Secretaria de Comunicação (SECOM)">Secretaria de Comunicação (SECOM)</option>
+                                <option value="Secretaria de Direitos Humanos, Cidadania e Juventude">Secretaria de Direitos Humanos, Cidadania e Juventude</option>
+                                <option value="Secretaria de Projetos Estratégicos">Secretaria de Projetos Estratégicos</option>
+                                <option value="Secretaria de Turismo">Secretaria de Turismo</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">PARA (Destinatário) *</label>
+                            <select id="para" 
+                                    class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
+                                    onchange="validarCampo(this); autoSave()">
+                                <option value="">Selecione a secretaria</option>
+                                <option value="Gabinete do Prefeito (GAPRE)">Gabinete do Prefeito (GAPRE)</option>
+                                <option value="Gabinete do Vice-Prefeito (GAVIPRE)">Gabinete do Vice-Prefeito (GAVIPRE)</option>
+                                <option value="Secretaria de Governo (SEGOV)">Secretaria de Governo (SEGOV)</option>
+                                <option value="Secretaria de Administração (SEAD)">Secretaria de Administração (SEAD)</option>
+                                <option value="Secretaria de Desenvolvimento Social (SEDES)">Secretaria de Desenvolvimento Social (SEDES)</option>
+                                <option value="Secretaria da Educação (SEDUC)">Secretaria da Educação (SEDUC)</option>
+                                <option value="Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)">Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)</option>
+                                <option value="Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)">Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)</option>
+                                <option value="Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)">Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)</option>
+                                <option value="Secretaria de Agricultura e Pesca (SEAP)">Secretaria de Agricultura e Pesca (SEAP)</option>
+                                <option value="Secretaria da Saúde (SESAU)">Secretaria da Saúde (SESAU)</option>
+                                <option value="Secretaria da Fazenda e Orçamento (SEFAZ)">Secretaria da Fazenda e Orçamento (SEFAZ)</option>
+                                <option value="Secretaria de Cultura (SECULT)">Secretaria de Cultura (SECULT)</option>
+                                <option value="Secretaria de Comunicação (SECOM)">Secretaria de Comunicação (SECOM)</option>
+                                <option value="Secretaria de Direitos Humanos, Cidadania e Juventude">Secretaria de Direitos Humanos, Cidadania e Juventude</option>
+                                <option value="Secretaria de Projetos Estratégicos">Secretaria de Projetos Estratégicos</option>
+                                <option value="Secretaria de Turismo">Secretaria de Turismo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Linha 3: Assunto -->
+                    <div class="space-y-1">
+                        <label class="text-xs font-medium text-gray-700">Assunto *</label>
+                        <input type="text" 
+                               id="assunto" 
+                               placeholder="Descreva o assunto"
+                               class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
+                               oninput="validarCampo(this); autoSave()">
+                    </div>
+
+                    <!-- Descrição -->
+                    <div class="space-y-1">
+                        <label class="text-xs font-medium text-gray-700">Descrição do Problema *</label>
+                        <textarea id="descricao" 
+                                  placeholder="Descreva detalhadamente o problema ou solicitação..."
+                                  class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 min-h-[80px] textarea-auto-resize"
+                                  oninput="autoResize(this); validarCampo(this); autoSave()"></textarea>
+                    </div>
+
+                    <!-- Status e Prioridade (apenas para tela) -->
+                    <div class="no-print grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">Status</label>
+                            <select id="status" 
+                                    class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
+                                    onchange="autoSave()">
+                                <option value="Aberto">Aberto</option>
+                                <option value="Em Andamento">Em Andamento</option>
+                                <option value="Aguardando">Aguardando</option>
+                                <option value="Resolvido">Resolvido</option>
+                                <option value="Fechado">Fechado</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-700">Prioridade</label>
+                            <select id="prioridade" 
+                                    class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
+                                    onchange="autoSave()">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Urgente">Urgente</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de Assinaturas - Tela -->
+        <div class="mt-8 no-print">
+            <div class="grid grid-cols-2 gap-6">
+                <div class="text-center">
+                    <div class="border-b-2 border-gray-400 mb-2 h-8"></div>
+                    <p class="font-medium text-gray-700 text-xs">Assinatura do Remetente</p>
+                </div>
+                <div class="text-center">
+                    <div class="border-b-2 border-gray-400 mb-2 h-8"></div>
+                    <p class="font-medium text-gray-700 text-xs mb-2">Assinatura do Destinatário</p>
+                    <div class="flex items-center justify-center gap-3 text-xs">
+                        <div class="flex items-center gap-1">
+                            <span>Data:</span>
+                            <div class="border-b border-gray-400 w-14 h-3"></div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span>Hora:</span>
+                            <div class="border-b border-gray-400 w-10 h-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Área de Assinaturas - Impressão -->
+    <div class="print-only print-signatures hidden">
+        <div class="max-w-4xl mx-auto px-3">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="text-center">
+                    <div class="border-b-2 border-gray-400 mb-2 h-6"></div>
+                    <p class="font-medium text-gray-700 text-xs">Assinatura do Remetente</p>
+                </div>
+                <div class="text-center">
+                    <div class="border-b-2 border-gray-400 mb-2 h-6"></div>
+                    <p class="font-medium text-gray-700 text-xs mb-2">Assinatura do Destinatário</p>
+                    <div class="flex items-center justify-center gap-3 text-xs">
+                        <div class="flex items-center gap-1">
+                            <span>Data:</span>
+                            <div class="border-b border-gray-400 w-14 h-3"></div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span>Hora:</span>
+                            <div class="border-b border-gray-400 w-10 h-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Histórico -->
+    <div id="modalHistorico" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">Histórico de Chamados</h3>
+                <button onclick="fecharHistorico()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="listaHistorico" class="space-y-2 max-h-96 overflow-y-auto">
+                <!-- Lista será preenchida dinamicamente -->
+            </div>
+            <div class="mt-4 flex gap-2">
+                <button onclick="exportarHistorico()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+                <button onclick="limparHistorico()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                    <i class="fas fa-trash"></i> Limpar Histórico
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script>
+        // Variáveis globais
+        let autoSaveTimeout;
+        let ultimoNumero = 0;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializar();
+        });
+
+        function inicializar() {
+            // Definir data atual
+            document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
+            
+            // Definir ano atual
+            document.getElementById('anoVigencia').value = new Date().getFullYear();
+            
+            // Carregar último número usado
+            ultimoNumero = parseInt(localStorage.getItem('ultimoNumero') || '0');
+            
+            // Carregar dados salvos
+            carregarDados();
+            
+            // Configurar auto-resize para textarea
+            autoResize(document.getElementById('descricao'));
+        }
+
+        // Função para gerar próximo número
+        function gerarProximoNumero() {
+            if (confirm('Isso irá limpar o formulário atual e gerar um novo número. Continuar?')) {
+                ultimoNumero++;
+                localStorage.setItem('ultimoNumero', ultimoNumero.toString());
+                
+                // Limpar formulário
+                limparFormulario();
+                
+                // Definir novo número
+                document.getElementById('numeroOrdem').value = ultimoNumero.toString().padStart(3, '0');
+                
+                // Auto save
+                autoSave();
+                
+                mostrarToast('Novo chamado criado!', 'success');
+            }
+        }
+
+        // Função para limpar formulário
+        function limparFormulario() {
+            document.getElementById('numeroOrdem').value = '';
+            document.getElementById('att').value = '';
+            document.getElementById('de').value = '';
+            document.getElementById('para').value = '';
+            document.getElementById('assunto').value = '';
+            document.getElementById('descricao').value = '';
+            document.getElementById('status').value = 'Aberto';
+            document.getElementById('prioridade').value = 'Normal';
+            
+            // Limpar validações
+            document.querySelectorAll('input, select, textarea').forEach(campo => {
+                campo.classList.remove('campo-erro', 'campo-sucesso');
+            });
+            
+            // Limpar secretaria remetente
+            document.getElementById('secretariaRemetente').textContent = '';
+            
+            // Auto resize textarea
+            autoResize(document.getElementById('descricao'));
+        }
+
+        // Função para auto-resize da textarea
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.max(80, textarea.scrollHeight) + 'px';
+        }
+
+        // Função para validar campo
+        function validarCampo(campo) {
+            const valor = campo.value.trim();
+            const isRequired = campo.previousElementSibling.textContent.includes('*');
+            
+            if (isRequired && !valor) {
+                campo.classList.add('campo-erro');
+                campo.classList.remove('campo-sucesso');
+                return false;
+            } else if (valor) {
+                campo.classList.add('campo-sucesso');
+                campo.classList.remove('campo-erro');
+                return true;
+            } else {
+                campo.classList.remove('campo-erro', 'campo-sucesso');
+                return true;
+            }
+        }
+
+        // Função para validar formulário completo
+        function validarFormulario() {
+            const camposObrigatorios = [
+                'numeroOrdem', 'att', 'de', 'para', 'assunto', 'descricao'
+            ];
+            
+            let valido = true;
+            
+            camposObrigatorios.forEach(id => {
+                const campo = document.getElementById(id);
+                if (!validarCampo(campo)) {
+                    valido = false;
+                }
+            });
+            
+            return valido;
+        }
+
+        // Função para atualizar secretaria remetente no cabeçalho
+        function atualizarSecretariaRemetente() {
+            const de = document.getElementById('de').value;
+            document.getElementById('secretariaRemetente').textContent = de;
+        }
+
+        // Função para auto-save
+        function autoSave() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                salvarDados();
+            }, 1000);
+        }
+
+        // Função para salvar dados no localStorage
+        function salvarDados() {
+            const dados = {
+                numeroOrdem: document.getElementById('numeroOrdem').value,
+                anoVigencia: document.getElementById('anoVigencia').value,
+                att: document.getElementById('att').value,
+                de: document.getElementById('de').value,
+                para: document.getElementById('para').value,
+                assunto: document.getElementById('assunto').value,
+                descricao: document.getElementById('descricao').value,
+                status: document.getElementById('status').value,
+                prioridade: document.getElementById('prioridade').value,
+                dataModificacao: new Date().toISOString()
+            };
+            
+            localStorage.setItem('chamadoAtual', JSON.stringify(dados));
+        }
+
+        // Função para carregar dados do localStorage
+        function carregarDados() {
+            const dados = localStorage.getItem('chamadoAtual');
+            if (dados) {
+                const obj = JSON.parse(dados);
+                document.getElementById('numeroOrdem').value = obj.numeroOrdem || '';
+                document.getElementById('anoVigencia').value = obj.anoVigencia || new Date().getFullYear();
+                document.getElementById('att').value = obj.att || '';
+                document.getElementById('de').value = obj.de || '';
+                document.getElementById('para').value = obj.para || '';
+                document.getElementById('assunto').value = obj.assunto || '';
+                document.getElementById('descricao').value = obj.descricao || '';
+                document.getElementById('status').value = obj.status || 'Aberto';
+                document.getElementById('prioridade').value = obj.prioridade || 'Normal';
+                
+                // Atualizar secretaria remetente
+                atualizarSecretariaRemetente();
+                
+                // Auto resize textarea
+                autoResize(document.getElementById('descricao'));
+            }
+        }
+
+        // Função para salvar chamado no histórico
+        function salvarChamado() {
+            if (!validarFormulario()) {
+                mostrarToast('Por favor, preencha todos os campos obrigatórios!', 'error');
+                return;
+            }
+            
+            const dados = {
+                id: Date.now(),
+                numeroOrdem: document.getElementById('numeroOrdem').value,
+                anoVigencia: document.getElementById('anoVigencia').value,
+                att: document.getElementById('att').value,
+                de: document.getElementById('de').value,
+                para: document.getElementById('para').value,
+                assunto: document.getElementById('assunto').value,
+                descricao: document.getElementById('descricao').value,
+                status: document.getElementById('status').value,
+                prioridade: document.getElementById('prioridade').value,
+                dataCriacao: new Date().toISOString(),
+                dataAtual: document.getElementById('dataAtual').textContent
+            };
+            
+            // Salvar no histórico
+            let historico = JSON.parse(localStorage.getItem('historicoChamados') || '[]');
+            
+            // Verificar se já existe (atualizar)
+            const indiceExistente = historico.findIndex(item => 
+                item.numeroOrdem === dados.numeroOrdem && 
+                item.anoVigencia === dados.anoVigencia
+            );
+            
+            if (indiceExistente >= 0) {
+                historico[indiceExistente] = dados;
+                mostrarToast('Chamado atualizado com sucesso!', 'success');
+            } else {
+                historico.unshift(dados);
+                mostrarToast('Chamado salvo com sucesso!', 'success');
+            }
+            
+            localStorage.setItem('historicoChamados', JSON.stringify(historico));
+        }
+
+        // Função para abrir histórico
+        function abrirHistorico() {
+            const historico = JSON.parse(localStorage.getItem('historicoChamados') || '[]');
+            const lista = document.getElementById('listaHistorico');
+            
+            if (historico.length === 0) {
+                lista.innerHTML = '<p class="text-gray-500 text-center py-4">Nenhum chamado salvo ainda.</p>';
+            } else {
+                lista.innerHTML = historico.map(item => `
+                    <div class="border rounded p-3 hover:bg-gray-50 cursor-pointer" onclick="carregarChamado(${item.id})">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-bold text-sm">#${item.numeroOrdem}/${item.anoVigencia}</span>
+                                    <span class="px-2 py-1 rounded text-xs ${getStatusColor(item.status)}">${item.status}</span>
+                                    <span class="px-2 py-1 rounded text-xs ${getPrioridadeColor(item.prioridade)}">${item.prioridade}</span>
+                                </div>
+                                <p class="font-medium text-sm">${item.assunto}</p>
+                                <p class="text-xs text-gray-600">${item.de} → ${item.para}</p>
+                                <p class="text-xs text-gray-500">${new Date(item.dataCriacao).toLocaleString('pt-BR')}</p>
+                            </div>
+                            <button onclick="event.stopPropagation(); excluirChamado(${item.id})" 
+                                    class="text-red-500 hover:text-red-700 ml-2">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            document.getElementById('modalHistorico').classList.add('show');
+        }
+
+        // Função para fechar histórico
+        function fecharHistorico() {
+            document.getElementById('modalHistorico').classList.remove('show');
+        }
+
+        // Função para carregar chamado do histórico
+        function carregarChamado(id) {
+            const historico = JSON.parse(localStorage.getItem('historicoChamados') || '[]');
+            const chamado = historico.find(item => item.id === id);
+            
+            if (chamado) {
+                document.getElementById('numeroOrdem').value = chamado.numeroOrdem;
+                document.getElementById('anoVigencia').value = chamado.anoVigencia;
+                document.getElementById('att').value = chamado.att;
+                document.getElementById('de').value = chamado.de;
+                document.getElementById('para').value = chamado.para;
+                document.getElementById('assunto').value = chamado.assunto;
+                document.getElementById('descricao').value = chamado.descricao;
+                document.getElementById('status').value = chamado.status;
+                document.getElementById('prioridade').value = chamado.prioridade;
+                
+                // Atualizar secretaria remetente
+                atualizarSecretariaRemetente();
+                
+                // Auto resize textarea
+                autoResize(document.getElementById('descricao'));
+                
+                // Auto save
+                autoSave();
+                
+                fecharHistorico();
+                mostrarToast('Chamado carregado!', 'info');
+            }
+        }
+
+        // Função para excluir chamado
+        function excluirChamado(id) {
+            if (confirm('Tem certeza que deseja excluir este chamado?')) {
+                let historico = JSON.parse(localStorage.getItem('historicoChamados') || '[]');
+                historico = historico.filter(item => item.id !== id);
+                localStorage.setItem('historicoChamados', JSON.stringify(historico));
+                abrirHistorico(); // Recarregar lista
+                mostrarToast('Chamado excluído!', 'success');
+            }
+        }
+
+        // Função para limpar histórico
+        function limparHistorico() {
+            if (confirm('Tem certeza que deseja limpar todo o histórico? Esta ação não pode ser desfeita.')) {
+                localStorage.removeItem('historicoChamados');
+                abrirHistorico(); // Recarregar lista
+                mostrarToast('Histórico limpo!', 'success');
+            }
+        }
+
+        // Função para exportar histórico
+        function exportarHistorico() {
+            const historico = JSON.parse(localStorage.getItem('historicoChamados') || '[]');
+            
+            if (historico.length === 0) {
+                mostrarToast('Nenhum chamado para exportar!', 'error');
+                return;
+            }
+            
+            // Criar CSV
+            const headers = ['Número', 'Ano', 'Atenção de', 'De', 'Para', 'Assunto', 'Descrição', 'Status', 'Prioridade', 'Data Criação'];
+            const csvContent = [
+                headers.join(','),
+                ...historico.map(item => [
+                    item.numeroOrdem,
+                    item.anoVigencia,
+                    `"${item.att}"`,
+                    `"${item.de}"`,
+                    `"${item.para}"`,
+                    `"${item.assunto}"`,
+                    `"${item.descricao.replace(/"/g, '""')}"`,
+                    item.status,
+                    item.prioridade,
+                    new Date(item.dataCriacao).toLocaleString('pt-BR')
+                ].join(','))
+            ].join('\n');
+            
+            // Download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `historico-chamados-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            mostrarToast('Histórico exportado!', 'success');
+        }
+
+        // Funções auxiliares para cores
+        function getStatusColor(status) {
+            const cores = {
+                'Aberto': 'bg-blue-100 text-blue-800',
+                'Em Andamento': 'bg-yellow-100 text-yellow-800',
+                'Aguardando': 'bg-orange-100 text-orange-800',
+                'Resolvido': 'bg-green-100 text-green-800',
+                'Fechado': 'bg-gray-100 text-gray-800'
+            };
+            return cores[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getPrioridadeColor(prioridade) {
+            const cores = {
+                'Baixa': 'bg-green-100 text-green-800',
+                'Normal': 'bg-blue-100 text-blue-800',
+                'Alta': 'bg-orange-100 text-orange-800',
+                'Urgente': 'bg-red-100 text-red-800'
+            };
+            return cores[prioridade] || 'bg-gray-100 text-gray-800';
+        }
+
+        // Função para mostrar toast
+        function mostrarToast(mensagem, tipo = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${tipo}`;
+            toast.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check' : tipo === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                ${mensagem}
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            // Mostrar
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalHistorico');
+            if (event.target === modal) {
+                fecharHistorico();
+            }
+        }
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        salvarChamado();
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        window.print();
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        gerarProximoNumero();
+                        break;
+                    case 'h':
+                        e.preventDefault();
+                        abrirHistorico();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
