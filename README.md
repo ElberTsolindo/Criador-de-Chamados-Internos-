@@ -1,30 +1,59 @@
-# Prefeitura de São Francisco do Conde
+# Sistema de Chamados Internos - Prefeitura de São Francisco do Conde
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+Sistema web para gerenciamento de chamados internos da Prefeitura Municipal de São Francisco do Conde.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/supacold10-6558s-projects/v0-prefeitura-de-sao-francisco-do-conde)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/F19EKt08Dc5)
+## 🌐 Acesso Online
 
-## Overview
+**URL:** [https://chamados-sfc.com](https://chamados-sfc.com)
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## ✨ Funcionalidades
 
-## Deployment
+- ✅ Formulário de chamados internos
+- ✅ Seleção de secretarias
+- ✅ Numeração automática
+- ✅ Impressão otimizada para A4
+- ✅ Design responsivo
+- ✅ Interface limpa e profissional
 
-Your project is live at:
+## 🖨️ Impressão
 
-**[https://vercel.com/supacold10-6558s-projects/v0-prefeitura-de-sao-francisco-do-conde](https://vercel.com/supacold10-6558s-projects/v0-prefeitura-de-sao-francisco-do-conde)**
+O sistema foi otimizado para impressão em papel A4, garantindo que todo o conteúdo caiba em uma única página.
 
-## Build your app
+## 🏛️ Secretarias Disponíveis
 
-Continue building your app on:
+- Gabinete do Prefeito (GAPRE)
+- Gabinete do Vice-Prefeito (GAVIPRE)
+- Secretaria de Governo (SEGOV)
+- Secretaria de Administração (SEAD)
+- Secretaria de Desenvolvimento Social (SEDES)
+- Secretaria da Educação (SEDUC)
+- Secretaria de Infraestrutura e Meio Ambiente (SEINFMA)
+- Secretaria de Serviços, Conservação e Ordem Pública (SESCOP)
+- Secretaria de Planejamento e Desenvolvimento Econômico (SEPLANDEC)
+- Secretaria de Agricultura e Pesca (SEAP)
+- Secretaria da Saúde (SESAU)
+- Secretaria da Fazenda e Orçamento (SEFAZ)
+- Secretaria de Cultura (SECULT)
+- Secretaria de Comunicação (SECOM)
+- Secretaria de Direitos Humanos, Cidadania e Juventude
+- Secretaria de Projetos Estratégicos
+- Secretaria de Turismo
 
-**[https://v0.dev/chat/projects/F19EKt08Dc5](https://v0.dev/chat/projects/F19EKt08Dc5)**
+## 🚀 Tecnologias
 
-## How It Works
+- Next.js 14
+- React 18
+- Tailwind CSS
+- TypeScript
+- Shadcn/ui
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## 📱 Compatibilidade
+
+- ✅ Desktop (Windows, Mac, Linux)
+- ✅ Tablet
+- ✅ Mobile
+- ✅ Todos os navegadores modernos
+
+---
+
+**Desenvolvido para a Prefeitura Municipal de São Francisco do Conde**
