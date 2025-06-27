@@ -71,14 +71,14 @@ export default function ChamadosInternos() {
               <img
                 src="https://saofranciscodoconde.ba.gov.br/wp-content/uploads/2021/02/brasao-300x300.jpg"
                 alt="Brasão da Prefeitura"
-                className="w-[70px] h-[70px] print:w-[60px] print:h-[60px] object-contain"
+                className="w-[130px] h-[130px] print:w-[120px] print:h-[120px] object-contain"
               />
               <div className="flex-1">
-                <h1 className="text-lg print:text-base font-bold text-gray-800 leading-tight">
+                <h1 className="text-2xl print:text-xl font-bold text-gray-800 leading-tight">
                   PREFEITURA MUNICIPAL DE SÃO FRANCISCO DO CONDE
                 </h1>
                 <div className="h-0.5 bg-blue-600 w-full mt-1 mb-2"></div>
-                {de && <p className="text-xs text-blue-600 font-medium">{de}</p>}
+                {de && <p className="text-base text-blue-600 font-medium">{de}</p>}
               </div>
             </div>
           </CardContent>
@@ -188,11 +188,18 @@ export default function ChamadosInternos() {
                   style={{
                     minHeight: "80px",
                     height: "auto",
+                    whiteSpace: "pre-wrap",
                   }}
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement
                     target.style.height = "auto"
                     target.style.height = Math.max(80, target.scrollHeight) + "px"
+                  }}
+                  onBlur={(e) => {
+                    const value = e.target.value.trim()
+                    if (value && !value.endsWith("\n")) {
+                      setDescricao(value + "\n")
+                    }
                   }}
                 />
               </div>
@@ -339,16 +346,20 @@ export default function ChamadosInternos() {
             height: 1.5rem !important;
           }
           
-          .print\\:w-\\[60px\\] {
-            width: 60px !important;
+          .print\\:w-\\[120px\\] {
+            width: 120px !important;
           }
           
-          .print\\:h-\\[60px\\] {
-            height: 60px !important;
+          .print\\:h-\\[120px\\] {
+            height: 120px !important;
           }
           
           .print\\:text-base {
             font-size: 0.875rem !important;
+          }
+
+          .print\\:text-xl {
+            font-size: 1.125rem !important;
           }
         }
       `}</style>
