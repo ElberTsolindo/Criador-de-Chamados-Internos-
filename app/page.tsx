@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Printer } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Printer, FileText } from "lucide-react"
 
 const secretarias = [
   "Gabinete do Prefeito (GAPRE)",
@@ -44,163 +45,181 @@ export default function ChamadosInternos() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white print:bg-white">
-      {/* Botão de impressão - oculto na impressão */}
-      <div className="print:hidden fixed top-4 right-4 z-10">
-        <Button onClick={handlePrint} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
-          <Printer className="h-4 w-4" />
-          Imprimir
-        </Button>
-      </div>
-
-      <div className="max-w-4xl mx-auto p-4 print:p-4">
-        {/* Cabeçalho Moderno */}
-        <div className="relative mb-4 print:mb-3 bg-white print:bg-transparent rounded-lg print:rounded-none shadow-sm print:shadow-none p-4 print:p-0">
-          <div className="flex items-center gap-6">
-            <img
-              src="https://saofranciscodoconde.ba.gov.br/wp-content/uploads/2021/02/brasao-300x300.jpg"
-              alt="Brasão da Prefeitura"
-              className="w-[120px] h-[120px] print:w-[100px] print:h-[100px] object-contain flex-shrink-0"
-            />
-            <div className="flex-1">
-              <h1 className="text-xl print:text-lg font-bold text-gray-800 leading-tight">PREFEITURA MUNICIPAL DE</h1>
-              <h1 className="text-xl print:text-lg font-bold text-gray-800 leading-tight mb-1">
-                SÃO FRANCISCO DO CONDE
-              </h1>
-              <div className="h-0.5 bg-gradient-to-r from-blue-600 to-blue-400 w-full mb-2"></div>
-              {de && <p className="text-sm print:text-xs text-blue-600 font-semibold">{de}</p>}
+    <div className="min-h-screen bg-gray-50 print:bg-white relative">
+      {/* Header simples */}
+      <div className="print:hidden bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-blue-600" />
+            <div>
+              <h1 className="text-base font-semibold text-gray-800">Sistema de Chamados Internos</h1>
+              <p className="text-xs text-gray-500">Prefeitura de São Francisco do Conde</p>
             </div>
           </div>
+          <Button onClick={handlePrint} size="sm" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+            <Printer className="h-3 w-3" />
+            Imprimir
+          </Button>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto p-4 print:p-3 print:pb-20">
+        {/* Cabeçalho do documento - mais compacto */}
+        <Card className="mb-4 print:mb-2 print:shadow-none print:border-0 border-0">
+          <CardContent className="p-4 print:p-2">
+            <div className="flex items-center gap-4">
+              <img
+                src="https://saofranciscodoconde.ba.gov.br/wp-content/uploads/2021/02/brasao-300x300.jpg"
+                alt="Brasão da Prefeitura"
+                className="w-[70px] h-[70px] print:w-[60px] print:h-[60px] object-contain"
+              />
+              <div className="flex-1">
+                <h1 className="text-lg print:text-base font-bold text-gray-800 leading-tight">
+                  PREFEITURA MUNICIPAL DE SÃO FRANCISCO DO CONDE
+                </h1>
+                <div className="h-0.5 bg-blue-600 w-full mt-1 mb-2"></div>
+                {de && <p className="text-xs text-blue-600 font-medium">{de}</p>}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Título do documento - mais compacto */}
+        <div className="text-center mb-4 print:mb-2">
+          <h2 className="text-lg print:text-base font-bold text-gray-800">CHAMADO INTERNO</h2>
         </div>
 
-        {/* Título do documento */}
-        <div className="text-center mb-4 print:mb-3">
-          <h2 className="text-xl font-bold text-gray-800">CHAMADO INTERNO</h2>
-        </div>
+        {/* Formulário - layout mais compacto */}
+        <Card className="print:shadow-none print:border-0 border-0">
+          <CardContent className="p-4 print:p-2">
+            <div className="space-y-4 print:space-y-2">
+              {/* Linha 1: Número, Data e ATT em uma linha */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:gap-2">
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-gray-700">Nº Ordem</Label>
+                  <div className="flex items-center gap-1">
+                    <Input
+                      value={numeroOrdem}
+                      onChange={(e) => setNumeroOrdem(e.target.value)}
+                      placeholder="000"
+                      className="w-16 text-center text-sm font-semibold border-0 bg-gray-100 h-8"
+                    />
+                    <span className="text-sm font-bold text-gray-400">/</span>
+                    <Input
+                      value={anoVigencia}
+                      onChange={(e) => setAnoVigencia(e.target.value)}
+                      className="w-16 text-center text-sm font-semibold border-0 bg-gray-100 h-8"
+                    />
+                  </div>
+                </div>
 
-        {/* Formulário Compacto */}
-        <div className="bg-white print:bg-transparent rounded-lg print:rounded-none shadow-sm print:shadow-none p-4 print:p-0 space-y-3 print:space-y-2">
-          {/* Linha 1: Número da Ordem e Data */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 print:gap-6">
-            <div className="flex items-center gap-3">
-              <Label className="font-semibold text-gray-700 min-w-[100px]">Nº Ordem:</Label>
-              <div className="flex items-center gap-2">
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-gray-700">Data</Label>
+                  <div className="px-2 py-1.5 bg-gray-100 rounded text-sm h-8 flex items-center">
+                    <span className="font-medium text-gray-800">{dataAtual}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-gray-700">Atenção de</Label>
+                  <Input
+                    value={att}
+                    onChange={(e) => setAtt(e.target.value)}
+                    placeholder="Nome do responsável"
+                    className="border-0 bg-gray-100 text-sm h-8"
+                  />
+                </div>
+              </div>
+
+              {/* Linha 2: DE e PARA */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:gap-2">
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-gray-700">DE (Remetente)</Label>
+                  <Select value={de} onValueChange={setDe}>
+                    <SelectTrigger className="border-0 bg-gray-100 text-sm h-8">
+                      <SelectValue placeholder="Selecione a secretaria" />
+                    </SelectTrigger>
+                    <SelectContent className="border-0">
+                      {secretarias.map((secretaria) => (
+                        <SelectItem key={secretaria} value={secretaria} className="text-sm">
+                          {secretaria}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-gray-700">PARA (Destinatário)</Label>
+                  <Select value={para} onValueChange={setPara}>
+                    <SelectTrigger className="border-0 bg-gray-100 text-sm h-8">
+                      <SelectValue placeholder="Selecione a secretaria" />
+                    </SelectTrigger>
+                    <SelectContent className="border-0">
+                      {secretarias.map((secretaria) => (
+                        <SelectItem key={secretaria} value={secretaria} className="text-sm">
+                          {secretaria}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Linha 3: Assunto */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-700">Assunto</Label>
                 <Input
-                  value={numeroOrdem}
-                  onChange={(e) => setNumeroOrdem(e.target.value)}
-                  placeholder="000"
-                  className="w-20 text-center border-2 border-gray-300 focus:border-blue-500"
+                  value={assunto}
+                  onChange={(e) => setAssunto(e.target.value)}
+                  placeholder="Descreva o assunto"
+                  className="border-0 bg-gray-100 text-sm h-8"
                 />
-                <span className="font-bold text-gray-600">/</span>
-                <Input
-                  value={anoVigencia}
-                  onChange={(e) => setAnoVigencia(e.target.value)}
-                  className="w-20 text-center border-2 border-gray-300 focus:border-blue-500"
+              </div>
+
+              {/* Descrição - mais compacta */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-700">Descrição do Problema</Label>
+                <Textarea
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                  placeholder="Descreva detalhadamente o problema ou solicitação..."
+                  className="border-0 bg-gray-100 resize-none overflow-hidden text-sm"
+                  style={{
+                    minHeight: "80px",
+                    height: "auto",
+                  }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement
+                    target.style.height = "auto"
+                    target.style.height = Math.max(80, target.scrollHeight) + "px"
+                  }}
                 />
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Label className="font-semibold text-gray-700 min-w-[60px]">Data:</Label>
-              <span className="text-gray-800 font-medium bg-gray-100 print:bg-transparent px-3 py-1 rounded">
-                {dataAtual}
-              </span>
-            </div>
-          </div>
-
-          {/* Linha 2: DE e PARA */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="font-semibold text-gray-700">DE:</Label>
-              <Select value={de} onValueChange={setDe}>
-                <SelectTrigger className="border-2 border-gray-300 focus:border-blue-500">
-                  <SelectValue placeholder="Selecione a secretaria" />
-                </SelectTrigger>
-                <SelectContent>
-                  {secretarias.map((secretaria) => (
-                    <SelectItem key={secretaria} value={secretaria}>
-                      {secretaria}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1">
-              <Label className="font-semibold text-gray-700">PARA:</Label>
-              <Select value={para} onValueChange={setPara}>
-                <SelectTrigger className="border-2 border-gray-300 focus:border-blue-500">
-                  <SelectValue placeholder="Selecione a secretaria" />
-                </SelectTrigger>
-                <SelectContent>
-                  {secretarias.map((secretaria) => (
-                    <SelectItem key={secretaria} value={secretaria}>
-                      {secretaria}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Linha 3: ATT e Assunto */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="font-semibold text-gray-700">ATT:</Label>
-              <Input
-                value={att}
-                onChange={(e) => setAtt(e.target.value)}
-                placeholder="Nome do responsável"
-                className="border-2 border-gray-300 focus:border-blue-500"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="font-semibold text-gray-700">Assunto:</Label>
-              <Input
-                value={assunto}
-                onChange={(e) => setAssunto(e.target.value)}
-                placeholder="Descreva o assunto"
-                className="border-2 border-gray-300 focus:border-blue-500"
-              />
-            </div>
-          </div>
-
-          {/* Descrição do Problema */}
-          <div className="space-y-1">
-            <Label className="font-semibold text-gray-700 text-sm">Descrição do Problema:</Label>
-            <Textarea
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              placeholder="Descreva detalhadamente o problema ou solicitação..."
-              className="min-h-[80px] print:min-h-[60px] border-2 border-gray-300 focus:border-blue-500 resize-none overflow-hidden"
-              style={{ height: "auto", minHeight: "80px" }}
-              onInput={(e) => {
-                const target = e.target as HTMLTextAreaElement
-                target.style.height = "auto"
-                target.style.height = target.scrollHeight + "px"
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Área de Assinaturas Compacta */}
-        <div className="mt-8 print:mt-6">
-          <div className="grid grid-cols-2 gap-8 print:gap-6">
+          </CardContent>
+        </Card>
+        {/* Área de Assinaturas - Apenas para visualização na tela */}
+        <div className="mt-8 print:hidden">
+          <div className="grid grid-cols-2 gap-6">
             {/* Assinatura do Remetente */}
             <div className="text-center">
-              <div className="border-b-2 border-gray-400 mb-2 h-16 print:h-12"></div>
-              <p className="font-semibold text-gray-700 text-sm">Assinatura do Remetente</p>
+              <div className="border-b-2 border-gray-400 mb-2 h-8"></div>
+              <p className="font-medium text-gray-700 text-xs">Assinatura do Remetente</p>
             </div>
 
             {/* Assinatura do Destinatário */}
             <div className="text-center">
-              <div className="border-b-2 border-gray-400 mb-2 h-16 print:h-12"></div>
-              <p className="font-semibold text-gray-700 text-sm mb-3">Assinatura do Destinatário</p>
-              <div className="space-y-2">
-                <div className="flex items-center justify-center gap-2 text-xs">
-                  <span className="font-medium">Data:</span>
-                  <div className="border-b border-gray-400 w-20 h-4"></div>
-                  <span className="font-medium">Hora:</span>
-                  <div className="border-b border-gray-400 w-16 h-4"></div>
+              <div className="border-b-2 border-gray-400 mb-2 h-8"></div>
+              <p className="font-medium text-gray-700 text-xs mb-2">Assinatura do Destinatário</p>
+              <div className="flex items-center justify-center gap-3 text-xs">
+                <div className="flex items-center gap-1">
+                  <span>Data:</span>
+                  <div className="border-b border-gray-400 w-14 h-3"></div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span>Hora:</span>
+                  <div className="border-b border-gray-400 w-10 h-3"></div>
                 </div>
               </div>
             </div>
@@ -208,95 +227,128 @@ export default function ChamadosInternos() {
         </div>
       </div>
 
-      {/* Estilos para impressão otimizados */}
+      {/* Área de Assinaturas para Impressão - Posição Fixa no Final */}
+      <div className="print:block hidden print:fixed print:bottom-4 print:left-0 print:right-0">
+        <div className="max-w-4xl mx-auto px-3">
+          <div className="grid grid-cols-2 gap-4">
+            {/* Assinatura do Remetente */}
+            <div className="text-center">
+              <div className="border-b-2 border-gray-400 mb-2 h-6"></div>
+              <p className="font-medium text-gray-700 text-xs">Assinatura do Remetente</p>
+            </div>
+
+            {/* Assinatura do Destinatário */}
+            <div className="text-center">
+              <div className="border-b-2 border-gray-400 mb-2 h-6"></div>
+              <p className="font-medium text-gray-700 text-xs mb-2">Assinatura do Destinatário</p>
+              <div className="flex items-center justify-center gap-3 text-xs">
+                <div className="flex items-center gap-1">
+                  <span>Data:</span>
+                  <div className="border-b border-gray-400 w-14 h-3"></div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span>Hora:</span>
+                  <div className="border-b border-gray-400 w-10 h-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Estilos para impressão super otimizados */}
       <style jsx global>{`
         @media print {
           @page {
-            margin: 0.5in;
+            margin: 0.4in;
             size: A4;
           }
           
           body {
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
-            font-size: 12px;
+            font-size: 10px;
+            line-height: 1.2;
           }
           
           .print\\:hidden {
             display: none !important;
+          }
+
+          .print\\:block {
+            display: block !important;
+          }
+
+          .print\\:fixed {
+            position: fixed !important;
+          }
+
+          .print\\:bottom-4 {
+            bottom: 1rem !important;
+          }
+
+          .print\\:left-0 {
+            left: 0 !important;
+          }
+
+          .print\\:right-0 {
+            right: 0 !important;
           }
           
           .print\\:bg-white {
             background: white !important;
           }
           
-          .print\\:bg-transparent {
-            background: transparent !important;
-          }
-          
           .print\\:shadow-none {
             box-shadow: none !important;
           }
           
-          .print\\:rounded-none {
-            border-radius: 0 !important;
+          .print\\:border-0 {
+            border: none !important;
           }
           
-          .print\\:p-4 {
-            padding: 1rem !important;
+          .print\\:p-3 {
+            padding: 0.75rem !important;
           }
           
-          .print\\:p-0 {
-            padding: 0 !important;
+          .print\\:p-2 {
+            padding: 0.5rem !important;
+          }
+
+          .print\\:pb-20 {
+            padding-bottom: 5rem !important;
           }
           
-          .print\\:mb-4 {
-            margin-bottom: 1rem !important;
+          .print\\:mb-2 {
+            margin-bottom: 0.5rem !important;
           }
           
-          .print\\:space-y-3 > * + * {
-            margin-top: 0.75rem !important;
+          .print\\:space-y-2 > * + * {
+            margin-top: 0.5rem !important;
           }
           
-          .print\\:mt-6 {
-            margin-top: 1.5rem !important;
+          .print\\:gap-2 {
+            gap: 0.5rem !important;
           }
           
-          .print\\:gap-6 {
-            gap: 1.5rem !important;
+          .print\\:gap-4 {
+            gap: 1rem !important;
           }
           
-          .print\\:min-h-\\[100px\\] {
-            min-height: 100px !important;
+          .print\\:h-6 {
+            height: 1.5rem !important;
           }
           
-          .print\\:h-12 {
-            height: 3rem !important;
+          .print\\:w-\\[60px\\] {
+            width: 60px !important;
           }
           
-          .print\\:w-\\[100px\\] {
-            width: 100px !important;
+          .print\\:h-\\[60px\\] {
+            height: 60px !important;
           }
           
-          .print\\:h-\\[100px\\] {
-            height: 100px !important;
-          }
-          
-          .print\\:text-xl {
-            font-size: 1.25rem !important;
-          }
-          
-          .print\\:text-sm {
+          .print\\:text-base {
             font-size: 0.875rem !important;
-          }
-          
-          .print\\:px-4 {
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
-          }
-          
-          .print\\:bg-gray-800 {
-            background-color: #1f2937 !important;
           }
         }
       `}</style>
