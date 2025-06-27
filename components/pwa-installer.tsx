@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Download, X, Smartphone, Monitor, RefreshCw } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Download, X, Smartphone, Monitor, Wifi, WifiOff, Share, CloudIcon as CloudSync } from "lucide-react"
+import { useOfflineStorage } from "@/hooks/use-offline-storage"
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -13,67 +15,43 @@ export function PWAInstaller() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showInstallBanner, setShowInstallBanner] = useState(false)
   const [isInstalled, setIsInstalled] = useState(false)
-  const [isStandalone, setIsStandalone] = useState(false)
-  const [installInstructions, setInstallInstructions] = useState(false)
+  const [showFeatures, setShowFeatures] = useState(false)
+
+  const { isOnline, chamadosPendentes } = useOfflineStorage()
 
   useEffect(() => {
-    // Verificar se já está instalado
-    const checkInstalled = () => {
-      const standalone = window.matchMedia("(display-mode: standalone)").matches
-      const webkitStandalone = (window.navigator as any).standalone === true
-      setIsStandalone(standalone || webkitStandalone)
-      setIsInstalled(standalone || webkitStandalone)
-    }
+    // Detectar se já está instalado
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches
+    const isInWebAppiOS = (window.navigator as any).standalone === true
+    setIsInstalled(isStandalone || isInWebAppiOS)
 
-    checkInstalled()
-
-    // Listener para prompt de instalação
-    const handleBeforeInstallPrompt = (e: Event) => {
+    const handler = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
-      if (!isInstalled) {
+
+      // Mostrar banner apenas se não estiver instalado
+      if (!isStandalone && !isInWebAppiOS) {
         setShowInstallBanner(true)
       }
     }
 
-    // Listener para app instalado
-    const handleAppInstalled = () => {
-      console.log("🎉 PWA foi instalado!")
-      setIsInstalled(true)
-      setShowInstallBanner(false)
-      setDeferredPrompt(null)
-    }
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-    window.addEventListener("appinstalled", handleAppInstalled)
+    window.addEventListener("beforeinstallprompt", handler)
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-      window.removeEventListener("appinstalled", handleAppInstalled)
+      window.removeEventListener("beforeinstallprompt", handler)
     }
-  }, [isInstalled])
+  }, [])
 
   const handleInstall = async () => {
-    if (!deferredPrompt) {
-      setInstallInstructions(true)
-      return
-    }
+    if (!deferredPrompt) return
 
-    try {
-      await deferredPrompt.prompt()
-      const { outcome } = await deferredPrompt.userChoice
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
 
-      if (outcome === "accepted") {
-        console.log("✅ Usuário aceitou a instalação")
-        setShowInstallBanner(false)
-      } else {
-        console.log("❌ Usuário recusou a instalação")
-      }
-
+    if (outcome === "accepted") {
       setDeferredPrompt(null)
-    } catch (error) {
-      console.error("Erro na instalação:", error)
-      setInstallInstructions(true)
+      setShowInstallBanner(false)
+      setIsInstalled(true)
     }
   }
 
@@ -83,131 +61,81 @@ export function PWAInstaller() {
     localStorage.setItem("pwa-dismissed", Date.now().toString())
   }
 
-  const getDeviceInstructions = () => {
-    const userAgent = navigator.userAgent.toLowerCase()
-
-    if (userAgent.includes("chrome") && !userAgent.includes("edg")) {
-      return {
-        icon: <Monitor className="h-5 w-5" />,
-        title: "Chrome Desktop",
-        steps: [
-          "1. Clique nos 3 pontos (⋮) no canto superior direito",
-          "2. Selecione 'Instalar Chamados Internos...'",
-          "3. Clique em 'Instalar' na janela que aparecer",
-        ],
-      }
-    } else if (userAgent.includes("safari") && userAgent.includes("mobile")) {
-      return {
-        icon: <Smartphone className="h-5 w-5" />,
-        title: "Safari iOS",
-        steps: [
-          "1. Toque no botão de compartilhar (□↗)",
-          "2. Role para baixo e toque em 'Adicionar à Tela de Início'",
-          "3. Toque em 'Adicionar' no canto superior direito",
-        ],
-      }
-    } else if (userAgent.includes("android")) {
-      return {
-        icon: <Smartphone className="h-5 w-5" />,
-        title: "Android",
-        steps: [
-          "1. Toque nos 3 pontos (⋮) no menu do navegador",
-          "2. Selecione 'Adicionar à tela inicial'",
-          "3. Toque em 'Adicionar' para confirmar",
-        ],
-      }
-    } else {
-      return {
-        icon: <Monitor className="h-5 w-5" />,
-        title: "Navegador",
-        steps: [
-          "1. Procure pela opção 'Instalar app' no menu",
-          "2. Ou adicione aos favoritos para acesso rápido",
-          "3. Use o navegador em modo tela cheia",
-        ],
-      }
-    }
-  }
-
-  // Se já está instalado, mostrar status
+  // Não mostrar se já estiver instalado
   if (isInstalled) {
     return (
-      <div className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-lg shadow-lg z-50 print:hidden">
-        <div className="flex items-center gap-2">
-          <Download className="h-4 w-4" />
-          <span className="text-sm font-medium">App Instalado!</span>
-        </div>
-      </div>
-    )
-  }
-
-  // Modal de instruções manuais
-  if (installInstructions) {
-    const instructions = getDeviceInstructions()
-
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 print:hidden">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              {instructions.icon}
-              <h3 className="font-semibold text-lg">Como Instalar</h3>
-            </div>
-            <Button onClick={() => setInstallInstructions(false)} size="sm" variant="ghost">
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="space-y-3 mb-6">
-            <p className="text-sm text-gray-600 mb-3">
-              Para usar como aplicativo no seu <strong>{instructions.title}</strong>:
-            </p>
-            {instructions.steps.map((step, index) => (
-              <div key={index} className="text-sm text-gray-700">
-                {step}
+      <div className="fixed bottom-4 right-4 z-50 print:hidden">
+        <Card className="w-80 shadow-lg">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {isOnline ? <Wifi className="h-4 w-4 text-green-600" /> : <WifiOff className="h-4 w-4 text-red-600" />}
+                <span className="text-sm font-medium">{isOnline ? "Online" : "Offline"}</span>
               </div>
-            ))}
-          </div>
-
-          <div className="flex gap-2">
-            <Button onClick={() => setInstallInstructions(false)} className="flex-1">
-              Entendi
-            </Button>
-            <Button onClick={() => window.location.reload()} variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+              {chamadosPendentes > 0 && (
+                <div className="flex items-center gap-1 text-orange-600">
+                  <CloudSync className="h-4 w-4" />
+                  <span className="text-xs">{chamadosPendentes} pendentes</span>
+                </div>
+              )}
+            </div>
+          </CardHeader>
+        </Card>
       </div>
     )
   }
 
-  // Banner de instalação
   if (!showInstallBanner) return null
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50 print:hidden max-w-md mx-auto">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <Download className="h-4 w-4" />
-            <h3 className="font-semibold text-sm">Instalar Aplicativo</h3>
-          </div>
-          <p className="text-xs opacity-90 mb-3">Use offline, acesso rápido e experiência nativa</p>
-          <div className="flex gap-2">
-            <Button onClick={handleInstall} size="sm" variant="secondary" className="text-blue-600 hover:text-blue-700">
-              <Download className="h-3 w-3 mr-1" />
-              Instalar
-            </Button>
-            <Button onClick={handleDismiss} size="sm" variant="ghost" className="text-white hover:bg-blue-700">
-              Depois
+    <div className="fixed bottom-4 left-4 right-4 z-50 print:hidden">
+      <Card className="shadow-lg border-blue-200 bg-gradient-to-r from-blue-50 to-white">
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Smartphone className="h-5 w-5 text-blue-600" />
+                Instalar Aplicativo
+              </CardTitle>
+              <CardDescription className="mt-1">Use offline, acesso rápido e notificações</CardDescription>
+            </div>
+            <Button onClick={handleDismiss} size="sm" variant="ghost" className="text-gray-500 hover:text-gray-700">
+              <X className="h-4 w-4" />
             </Button>
           </div>
-        </div>
-        <Button onClick={handleDismiss} size="sm" variant="ghost" className="text-white hover:bg-blue-700 p-1">
-          <X className="h-3 w-3" />
-        </Button>
-      </div>
+        </CardHeader>
+
+        <CardContent className="pt-0">
+          {showFeatures && (
+            <div className="mb-4 space-y-2">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <WifiOff className="h-4 w-4" />
+                <span>Funciona completamente offline</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Monitor className="h-4 w-4" />
+                <span>Acesso rápido da área de trabalho</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Share className="h-4 w-4" />
+                <span>Compartilhamento nativo</span>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <Button onClick={handleInstall} className="flex-1 bg-blue-600 hover:bg-blue-700">
+              <Download className="h-4 w-4 mr-2" />
+              Instalar Agora
+            </Button>
+            <Button onClick={() => setShowFeatures(!showFeatures)} variant="outline" size="sm">
+              {showFeatures ? "Menos" : "Mais"}
+            </Button>
+          </div>
+
+          <p className="text-xs text-gray-500 mt-2 text-center">Gratuito • Sem anúncios • Dados seguros</p>
+        </CardContent>
+      </Card>
     </div>
   )
 }
