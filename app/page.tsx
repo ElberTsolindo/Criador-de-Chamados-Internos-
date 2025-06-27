@@ -29,7 +29,7 @@ const secretarias = [
   "Secretaria de Turismo",
 ]
 
-export default function ChamadosInternos() {
+export default function CriadorChamadosInternos() {
   const [numeroOrdem, setNumeroOrdem] = useState("")
   const [anoVigencia, setAnoVigencia] = useState(new Date().getFullYear().toString())
   const [de, setDe] = useState("")
@@ -52,7 +52,7 @@ export default function ChamadosInternos() {
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-blue-600" />
             <div>
-              <h1 className="text-base font-semibold text-gray-800">Sistema de Chamados Internos</h1>
+              <h1 className="text-base font-semibold text-gray-800">Criador de Chamados Internos</h1>
               <p className="text-xs text-gray-500">Prefeitura de São Francisco do Conde</p>
             </div>
           </div>

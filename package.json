@@ -1,8 +1,8 @@
 {
-  "name": "sistema-chamados-sfc",
+  "name": "criador-de-chamados-internos-sfc",
   "version": "1.0.0",
   "private": true,
-  "description": "Sistema de Chamados Internos - Prefeitura de São Francisco do Conde",
+  "description": "Criador de Chamados Internos - Prefeitura de São Francisco do Conde",
   "scripts": {
     "build": "next build",
     "dev": "next dev",

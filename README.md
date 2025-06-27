@@ -1,14 +1,14 @@
-# Sistema de Chamados Internos - Prefeitura de São Francisco do Conde
+# Criador de Chamados Internos - Prefeitura de São Francisco do Conde
 
-Sistema web para gerenciamento de chamados internos da Prefeitura Municipal de São Francisco do Conde.
+Sistema web para criação e gerenciamento de chamados internos da Prefeitura Municipal de São Francisco do Conde.
 
 ## 🌐 Acesso Online
 
-**URL:** [https://chamados-sfc.com](https://chamados-sfc.com)
+**URL:** [https://criador-chamados-sfc.com](https://criador-chamados-sfc.com)
 
 ## ✨ Funcionalidades
 
-- ✅ Formulário de chamados internos
+- ✅ Criador de chamados internos
 - ✅ Seleção de secretarias
 - ✅ Numeração automática
 - ✅ Impressão otimizada para A4

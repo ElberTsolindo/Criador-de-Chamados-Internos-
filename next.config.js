@@ -11,8 +11,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  assetPrefix: process.env.NODE_ENV === "production" ? "/chamados-internos" : "",
-  basePath: process.env.NODE_ENV === "production" ? "/chamados-internos" : "",
+  assetPrefix: process.env.NODE_ENV === "production" ? "/Criador-de-Chamados-Internos" : "",
+  basePath: process.env.NODE_ENV === "production" ? "/Criador-de-Chamados-Internos" : "",
 }
 
 module.exports = nextConfig
