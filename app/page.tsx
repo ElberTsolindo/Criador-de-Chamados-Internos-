@@ -29,7 +29,7 @@ const secretarias = [
   "Secretaria de Turismo",
 ]
 
-export default function CriadorChamadosInternos() {
+export default function ChamadosInternos() {
   const [numeroOrdem, setNumeroOrdem] = useState("")
   const [anoVigencia, setAnoVigencia] = useState(new Date().getFullYear().toString())
   const [de, setDe] = useState("")
@@ -52,7 +52,7 @@ export default function CriadorChamadosInternos() {
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-blue-600" />
             <div>
-              <h1 className="text-base font-semibold text-gray-800">Criador de Chamados Internos</h1>
+              <h1 className="text-base font-semibold text-gray-800">Sistema de Chamados Internos</h1>
               <p className="text-xs text-gray-500">Prefeitura de São Francisco do Conde</p>
             </div>
           </div>
@@ -71,14 +71,14 @@ export default function CriadorChamadosInternos() {
               <img
                 src="https://saofranciscodoconde.ba.gov.br/wp-content/uploads/2021/02/brasao-300x300.jpg"
                 alt="Brasão da Prefeitura"
-                className="w-[130px] h-[130px] print:w-[120px] print:h-[120px] object-contain"
+                className="w-[70px] h-[70px] print:w-[60px] print:h-[60px] object-contain"
               />
               <div className="flex-1">
-                <h1 className="text-2xl print:text-xl font-bold text-gray-800 leading-tight">
+                <h1 className="text-lg print:text-base font-bold text-gray-800 leading-tight">
                   PREFEITURA MUNICIPAL DE SÃO FRANCISCO DO CONDE
                 </h1>
                 <div className="h-0.5 bg-blue-600 w-full mt-1 mb-2"></div>
-                {de && <p className="text-base text-blue-600 font-medium">{de}</p>}
+                {de && <p className="text-xs text-blue-600 font-medium">{de}</p>}
               </div>
             </div>
           </CardContent>
@@ -115,7 +115,7 @@ export default function CriadorChamadosInternos() {
 
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Data</Label>
-                  <div className="px-3 py-1.5 bg-gray-100 rounded text-sm h-8 flex items-center justify-center min-w-[120px]">
+                  <div className="px-2 py-1.5 bg-gray-100 rounded text-sm h-8 flex items-center">
                     <span className="font-medium text-gray-800">{dataAtual}</span>
                   </div>
                 </div>
@@ -188,18 +188,11 @@ export default function CriadorChamadosInternos() {
                   style={{
                     minHeight: "80px",
                     height: "auto",
-                    whiteSpace: "pre-wrap",
                   }}
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement
                     target.style.height = "auto"
                     target.style.height = Math.max(80, target.scrollHeight) + "px"
-                  }}
-                  onBlur={(e) => {
-                    const value = e.target.value.trim()
-                    if (value && !value.endsWith("\n")) {
-                      setDescricao(value + "\n")
-                    }
                   }}
                 />
               </div>
@@ -346,20 +339,16 @@ export default function CriadorChamadosInternos() {
             height: 1.5rem !important;
           }
           
-          .print\\:w-\\[120px\\] {
-            width: 120px !important;
+          .print\\:w-\\[60px\\] {
+            width: 60px !important;
           }
           
-          .print\\:h-\\[120px\\] {
-            height: 120px !important;
+          .print\\:h-\\[60px\\] {
+            height: 60px !important;
           }
           
           .print\\:text-base {
             font-size: 0.875rem !important;
-          }
-
-          .print\\:text-xl {
-            font-size: 1.125rem !important;
           }
         }
       `}</style>
