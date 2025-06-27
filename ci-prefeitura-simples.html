@@ -106,6 +106,35 @@
             resize: none;
             overflow: hidden;
         }
+
+        /* Logo fallback */
+        .logo-container {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+        }
+
+        .logo-fallback {
+            display: none;
+        }
+
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        @media print {
+            .logo-container {
+                width: 60px !important;
+                height: 60px !important;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 print:bg-white relative">
@@ -121,12 +150,20 @@
                     <p class="text-xs text-gray-500">Prefeitura de São Francisco do Conde</p>
                 </div>
             </div>
-            <button onclick="window.print()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm">
-                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                </svg>
-                Imprimir
-            </button>
+            <div class="flex items-center gap-2">
+                <button onclick="limparFormulario()" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm">
+                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Limpar
+                </button>
+                <button onclick="window.print()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm">
+                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    </svg>
+                    Imprimir
+                </button>
+            </div>
         </div>
     </div>
 
@@ -135,17 +172,23 @@
         <div class="mb-4 print:mb-2 print:shadow-none print:border-0 border-0">
             <div class="bg-white rounded-lg shadow-sm p-4 print:p-2">
                 <div class="flex items-center gap-4">
-                    <div class="w-[70px] h-[70px] print:w-[60px] print:h-[60px] flex-shrink-0">
-                        <svg viewBox="0 0 100 100" class="w-full h-full">
-                            <!-- Brasão simplificado em SVG -->
-                            <circle cx="50" cy="50" r="45" fill="#1e40af" stroke="#1e3a8a" stroke-width="2"/>
-                            <circle cx="50" cy="35" r="15" fill="#fbbf24"/>
-                            <rect x="35" y="50" width="30" height="20" fill="#10b981"/>
-                            <rect x="40" y="55" width="20" height="2" fill="#ffffff"/>
-                            <rect x="40" y="60" width="20" height="2" fill="#ffffff"/>
-                            <rect x="40" y="65" width="20" height="2" fill="#ffffff"/>
-                            <text x="50" y="85" text-anchor="middle" fill="#ffffff" font-size="8" font-weight="bold">SFC</text>
-                        </svg>
+                    <div class="logo-container print:w-[60px] print:h-[60px] flex-shrink-0">
+                        <img 
+                            src="https://saofranciscodoconde.ba.gov.br/wp-content/uploads/2021/02/brasao-300x300.jpg" 
+                            alt="Brasão da Prefeitura" 
+                            class="logo-image"
+                            onerror="mostrarLogoFallback(this)"
+                            onload="esconderLogoFallback(this)"
+                        />
+                        <div class="logo-fallback w-full h-full flex items-center justify-center">
+                            <svg viewBox="0 0 100 100" class="w-12 h-12 text-blue-600">
+                                <!-- Brasão simplificado em SVG como fallback -->
+                                <circle cx="50" cy="50" r="45" fill="currentColor" opacity="0.1"/>
+                                <circle cx="50" cy="35" r="15" fill="currentColor" opacity="0.3"/>
+                                <rect x="35" y="50" width="30" height="20" fill="currentColor" opacity="0.2"/>
+                                <text x="50" y="85" text-anchor="middle" fill="currentColor" font-size="8" font-weight="bold">SFC</text>
+                            </svg>
+                        </div>
                     </div>
                     <div class="flex-1">
                         <h1 class="text-lg print:text-base font-bold text-gray-800 leading-tight">
@@ -177,14 +220,12 @@
                                     id="numeroOrdem"
                                     placeholder="000"
                                     class="w-16 text-center text-sm font-semibold border-0 bg-gray-100 rounded px-2 py-1.5 h-8"
-                                    oninput="autoSave()"
                                 />
                                 <span class="text-sm font-bold text-gray-400">/</span>
                                 <input
                                     type="text"
                                     id="anoVigencia"
                                     class="w-16 text-center text-sm font-semibold border-0 bg-gray-100 rounded px-2 py-1.5 h-8"
-                                    oninput="autoSave()"
                                 />
                             </div>
                         </div>
@@ -203,7 +244,6 @@
                                 id="att"
                                 placeholder="Nome do responsável"
                                 class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
-                                oninput="autoSave()"
                             />
                         </div>
                     </div>
@@ -212,7 +252,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 print:gap-2">
                         <div class="space-y-1">
                             <label class="text-xs font-medium text-gray-700">DE (Remetente)</label>
-                            <select id="de" class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8" onchange="atualizarSecretariaRemetente(); autoSave()">
+                            <select id="de" class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8" onchange="atualizarSecretariaRemetente()">
                                 <option value="">Selecione a secretaria</option>
                                 <option value="Gabinete do Prefeito (GAPRE)">Gabinete do Prefeito (GAPRE)</option>
                                 <option value="Gabinete do Vice-Prefeito (GAVIPRE)">Gabinete do Vice-Prefeito (GAVIPRE)</option>
@@ -236,7 +276,7 @@
 
                         <div class="space-y-1">
                             <label class="text-xs font-medium text-gray-700">PARA (Destinatário)</label>
-                            <select id="para" class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8" onchange="autoSave()">
+                            <select id="para" class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8">
                                 <option value="">Selecione a secretaria</option>
                                 <option value="Gabinete do Prefeito (GAPRE)">Gabinete do Prefeito (GAPRE)</option>
                                 <option value="Gabinete do Vice-Prefeito (GAVIPRE)">Gabinete do Vice-Prefeito (GAVIPRE)</option>
@@ -267,7 +307,6 @@
                             id="assunto"
                             placeholder="Descreva o assunto"
                             class="w-full border-0 bg-gray-100 text-sm rounded px-2 py-1.5 h-8"
-                            oninput="autoSave()"
                         />
                     </div>
 
@@ -279,7 +318,7 @@
                             placeholder="Descreva detalhadamente o problema ou solicitação..."
                             class="w-full border-0 bg-gray-100 rounded px-2 py-1.5 text-sm textarea-auto-resize"
                             style="min-height: 80px; height: auto;"
-                            oninput="autoResize(this); autoSave()"
+                            oninput="autoResize(this)"
                         ></textarea>
                     </div>
                 </div>
@@ -344,9 +383,7 @@
     </div>
 
     <script>
-        let autoSaveTimeout;
-
-        // Inicialização
+        // Inicialização - SEMPRE limpa o formulário ao abrir
         document.addEventListener('DOMContentLoaded', function() {
             // Definir data atual
             document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
@@ -354,8 +391,8 @@
             // Definir ano atual
             document.getElementById('anoVigencia').value = new Date().getFullYear();
             
-            // Carregar dados salvos
-            carregarDados();
+            // SEMPRE limpar formulário ao abrir
+            limparFormulario();
             
             // Configurar auto-resize para textarea
             autoResize(document.getElementById('descricao'));
@@ -373,49 +410,81 @@
             document.getElementById('secretariaRemetente').textContent = de;
         }
 
-        // Função para auto-save
-        function autoSave() {
-            clearTimeout(autoSaveTimeout);
-            autoSaveTimeout = setTimeout(() => {
-                salvarDados();
-            }, 1000);
-        }
-
-        // Função para salvar dados no localStorage
-        function salvarDados() {
-            const dados = {
-                numeroOrdem: document.getElementById('numeroOrdem').value,
-                anoVigencia: document.getElementById('anoVigencia').value,
-                att: document.getElementById('att').value,
-                de: document.getElementById('de').value,
-                para: document.getElementById('para').value,
-                assunto: document.getElementById('assunto').value,
-                descricao: document.getElementById('descricao').value
-            };
-            
-            localStorage.setItem('chamadoAtual', JSON.stringify(dados));
-        }
-
-        // Função para carregar dados do localStorage
-        function carregarDados() {
-            const dados = localStorage.getItem('chamadoAtual');
-            if (dados) {
-                const obj = JSON.parse(dados);
-                document.getElementById('numeroOrdem').value = obj.numeroOrdem || '';
-                document.getElementById('anoVigencia').value = obj.anoVigencia || new Date().getFullYear();
-                document.getElementById('att').value = obj.att || '';
-                document.getElementById('de').value = obj.de || '';
-                document.getElementById('para').value = obj.para || '';
-                document.getElementById('assunto').value = obj.assunto || '';
-                document.getElementById('descricao').value = obj.descricao || '';
+        // Função para limpar formulário
+        function limparFormulario() {
+            if (confirm('Tem certeza que deseja limpar todos os campos?')) {
+                // Limpar todos os campos
+                document.getElementById('numeroOrdem').value = '';
+                document.getElementById('att').value = '';
+                document.getElementById('de').value = '';
+                document.getElementById('para').value = '';
+                document.getElementById('assunto').value = '';
+                document.getElementById('descricao').value = '';
                 
-                // Atualizar secretaria remetente
-                atualizarSecretariaRemetente();
+                // Limpar secretaria remetente
+                document.getElementById('secretariaRemetente').textContent = '';
+                
+                // Manter apenas a data e ano atuais
+                document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
+                document.getElementById('anoVigencia').value = new Date().getFullYear();
                 
                 // Auto resize textarea
                 autoResize(document.getElementById('descricao'));
+                
+                // Focar no primeiro campo
+                document.getElementById('numeroOrdem').focus();
             }
         }
+
+        // Função para limpar formulário sem confirmação (usado na inicialização)
+        function limparFormularioSilencioso() {
+            // Limpar todos os campos
+            document.getElementById('numeroOrdem').value = '';
+            document.getElementById('att').value = '';
+            document.getElementById('de').value = '';
+            document.getElementById('para').value = '';
+            document.getElementById('assunto').value = '';
+            document.getElementById('descricao').value = '';
+            
+            // Limpar secretaria remetente
+            document.getElementById('secretariaRemetente').textContent = '';
+            
+            // Manter apenas a data e ano atuais
+            document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
+            document.getElementById('anoVigencia').value = new Date().getFullYear();
+            
+            // Auto resize textarea
+            autoResize(document.getElementById('descricao'));
+        }
+
+        // Função para mostrar logo fallback quando a imagem não carrega
+        function mostrarLogoFallback(img) {
+            const container = img.parentElement;
+            img.style.display = 'none';
+            container.querySelector('.logo-fallback').style.display = 'flex';
+        }
+
+        // Função para esconder logo fallback quando a imagem carrega
+        function esconderLogoFallback(img) {
+            const container = img.parentElement;
+            img.style.display = 'block';
+            container.querySelector('.logo-fallback').style.display = 'none';
+        }
+
+        // Modificar a inicialização para usar limpeza silenciosa
+        document.addEventListener('DOMContentLoaded', function() {
+            // Definir data atual
+            document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
+            
+            // Definir ano atual
+            document.getElementById('anoVigencia').value = new Date().getFullYear();
+            
+            // SEMPRE limpar formulário ao abrir (sem confirmação)
+            limparFormularioSilencioso();
+            
+            // Configurar auto-resize para textarea
+            autoResize(document.getElementById('descricao'));
+        });
     </script>
 </body>
 </html>
