@@ -1,15 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Printer } from "lucide-react"
-import { PWAInstaller } from "@/components/pwa-installer"
-import { useOfflineStorage } from "@/hooks/use-offline-storage"
-import { Save, Wifi, WifiOff } from "lucide-react"
 
 const secretarias = [
   "Gabinete do Prefeito (GAPRE)",
@@ -42,53 +39,14 @@ export default function ChamadosInternos() {
 
   const dataAtual = new Date().toLocaleDateString("pt-BR")
 
-  const { salvarChamado, isOnline } = useOfflineStorage()
-
   const handlePrint = () => {
     window.print()
   }
 
-  const handleSalvar = () => {
-    const dadosChamado = {
-      numeroOrdem,
-      anoVigencia,
-      de,
-      para,
-      att,
-      assunto,
-      descricao,
-      data: dataAtual,
-    }
-
-    const id = salvarChamado(dadosChamado)
-    alert(`Chamado ${numeroOrdem}/${anoVigencia} salvo com sucesso!`)
-  }
-
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("SW registrado com sucesso:", registration)
-        })
-        .catch((error) => {
-          console.log("Falha ao registrar SW:", error)
-        })
-    }
-  }, [])
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white print:bg-white">
       {/* Botão de impressão - oculto na impressão */}
-      <div className="print:hidden fixed top-4 right-4 z-10 flex gap-2">
-        <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 shadow-sm">
-          {isOnline ? <Wifi className="h-4 w-4 text-green-600" /> : <WifiOff className="h-4 w-4 text-red-600" />}
-          <span className="text-xs font-medium">{isOnline ? "Online" : "Offline"}</span>
-        </div>
-        <Button onClick={handleSalvar} className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
-          <Save className="h-4 w-4" />
-          Salvar
-        </Button>
+      <div className="print:hidden fixed top-4 right-4 z-10">
         <Button onClick={handlePrint} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
           <Printer className="h-4 w-4" />
           Imprimir
@@ -249,8 +207,6 @@ export default function ChamadosInternos() {
           </div>
         </div>
       </div>
-
-      <PWAInstaller />
 
       {/* Estilos para impressão otimizados */}
       <style jsx global>{`
